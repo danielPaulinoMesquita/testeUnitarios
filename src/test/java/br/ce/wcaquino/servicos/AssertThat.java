@@ -22,13 +22,20 @@ public class AssertThat {
 		Filme filme = new Filme("Filme 1", 2, 4.0);
 
 		// acao
-		Locacao locacao = service.alugarFilme(usuario, filme);
+		Locacao locacao;
+		try {
+			locacao = service.alugarFilme(usuario, filme);
+			// Assert that
+			Assert.assertThat(locacao.getValor(), CoreMatchers.is(4.0));
+			Assert.assertThat(locacao.getValor(), not(9.0));
 
-		// Assert that
-		Assert.assertThat(locacao.getValor(), CoreMatchers.is(4.0));
-		Assert.assertThat(locacao.getValor(), not(9.0));
+			assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
+			assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-		assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
-		assertTrue(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)));
+		
 	}
 }

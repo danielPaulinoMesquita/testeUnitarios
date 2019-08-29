@@ -27,14 +27,21 @@ public class LocacaoServiceTest {
 		//cenario
 		LocacaoService service = new LocacaoService();
 		Usuario usuario = new Usuario("Usuario 1");
-		Filme filme = new Filme("Filme 1", 2, 4.0);
+		Filme filme = new Filme("Filme 1", 0, 4.0);
 		
 		//acao
-		Locacao locacao = service.alugarFilme(usuario, filme);
+		Locacao locacao;
+		try {
+			locacao = service.alugarFilme(usuario, filme);
+			// Destaca os errors com error(O esperado dos dois parâmetros é definido no ultimo param que é is())
+			error.checkThat(locacao.getValor(), is(equalTo(4.0)));
+			error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()),is(true));
+			error.checkThat(isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)), is(true));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			Assert.fail();
+		}
 		
-		// Destaca os errors com error(O esperado dos dois parâmetros é definido no ultimo param que é is())
-		error.checkThat(locacao.getValor(), is(equalTo(6.0)));
-		error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()),is(true));
-		error.checkThat(isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)), is(false));
 	}
 }
