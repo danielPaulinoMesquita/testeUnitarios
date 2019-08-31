@@ -38,28 +38,21 @@ public class LocacaoServiceTest {
 	// É usado o before em todos os testes
 	@Before
 	public void setup() {
-		i++;
-
 		service = new LocacaoService();
-		System.out.println("contador : " + i);
-		System.out.println("Befor, sendo usado");
+	
 
 	}
 
 	@After
-	public void tearDown() {
-		System.out.println("After, sendo usado");
-		
+	public void tearDown() {		
 	}
 
 	@BeforeClass
 	public static void beforeClass() {
-		System.out.println("Before class, sendo usado");
 	}
 
 	@AfterClass
 	public static void tearDownClass() {
-		System.out.println("After class, sendo usado");
 		
 	}
 
@@ -68,7 +61,6 @@ public class LocacaoServiceTest {
 		// cenario
 		Usuario usuario = new Usuario("Usuario 1");
 		Filme filme = new Filme("Filme 1", 1, 4.0);
-		System.out.println("teste ");
 
 		// acao
 		Locacao locacao;
