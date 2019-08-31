@@ -3,7 +3,9 @@ package br.ce.wcaquino.servicos;
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -19,12 +21,12 @@ public class AssertThat {
 		// cenario
 		LocacaoService service = new LocacaoService();
 		Usuario usuario = new Usuario("Usuario 1");
-		Filme filme = new Filme("Filme 1", 2, 4.0);
-
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 4.0),
+				new Filme("Filme 2", 1, 4.0));
 		// acao
 		Locacao locacao;
 		try {
-			locacao = service.alugarFilme(usuario, filme);
+			locacao = service.alugarFilme(usuario, filmes);
 			// Assert that
 			Assert.assertThat(locacao.getValor(), CoreMatchers.is(4.0));
 			Assert.assertThat(locacao.getValor(), not(9.0));

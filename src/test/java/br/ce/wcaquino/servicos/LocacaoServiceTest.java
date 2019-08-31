@@ -4,7 +4,9 @@ import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -60,15 +62,15 @@ public class LocacaoServiceTest {
 	public void teste() {
 		// cenario
 		Usuario usuario = new Usuario("Usuario 1");
-		Filme filme = new Filme("Filme 1", 1, 4.0);
-
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 4.0),
+				new Filme("Filme 2", 1, 4.0));
 		// acao
 		Locacao locacao;
 		try {
-			locacao = service.alugarFilme(usuario, filme);
+			locacao = service.alugarFilme(usuario, filmes);
 			// Destaca os errors com error(O esperado dos dois parâmetros é definido no
 			// ultimo param que é is())
-			error.checkThat(locacao.getValor(), is(equalTo(4.0)));
+			error.checkThat(locacao.getValor(), is(equalTo(8.0)));
 			error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
 			error.checkThat(isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)), is(true));
 		} catch (Exception e) {
@@ -83,19 +85,22 @@ public class LocacaoServiceTest {
 	@Test(expected = FilmeSemEstoqueException.class)
 	public void testeFilmeSemEstoque() throws Exception {
 		Usuario usuario2 = new Usuario("Usuario 1");
-		Filme filme2 = new Filme("Filme 1", 0, 4.0);
-		service.alugarFilme(usuario2, filme2);
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 4.0),
+				new Filme("Filme 2", 0, 4.0));
+		
+		
+		service.alugarFilme(usuario2, filmes);
 	}
 
 	@Test
 	public void testLocacao_usuarioVazio() throws FilmeSemEstoqueException {
 		// Cenário
-		Filme filme2 = new Filme("Filme 1", 2, 4.0);
-		Usuario usuario = new Usuario("Usuario 1");
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 4.0),
+				new Filme("Filme 2", 1, 4.0));		Usuario usuario = new Usuario("Usuario 1");
 
 		// Ação
 		try {
-			service.alugarFilme(null, filme2);
+			service.alugarFilme(null, filmes);
 			Assert.fail();
 		} catch (LocadoraException e) {
 			Assert.assertThat(e.getMessage(), is("Usuário Vazio"));
@@ -105,7 +110,8 @@ public class LocacaoServiceTest {
 	@Test
 	public void testLocacao_filmeVazio() throws FilmeSemEstoqueException {
 		// Cenário
-		Filme filme2 = new Filme("Filme 1", 2, 4.0);
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 4.0),
+				new Filme("Filme 2", 0, 4.0));
 		Usuario usuario = new Usuario("Usuario 1");
 
 		// Ação
@@ -120,7 +126,8 @@ public class LocacaoServiceTest {
 	@Test
 	public void testLocacao_filmeVazio2() throws FilmeSemEstoqueException, LocadoraException {
 		// Cenário
-		Filme filme2 = new Filme("Filme 1", 2, 4.0);
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 4.0),
+				new Filme("Filme 2", 0, 4.0));
 		Usuario usuario = new Usuario("Usuario 1");
 
 		exception.expect(LocadoraException.class);
