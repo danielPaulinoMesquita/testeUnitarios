@@ -1,6 +1,7 @@
 package br.ce.wcaquino.servicos;
 
 import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
+import static br.ce.wcaquino.matchers.MatchersProprios.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -16,7 +17,6 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -214,6 +214,10 @@ public class LocacaoServiceTest {
 		Assert.assertFalse(ehretorno);
 		
 		Assume.assumeFalse(DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY));
+		
+		assertThat(retorno.getDataRetorno(), caiEm(Calendar.TUESDAY));
+		assertThat(retorno.getDataRetorno(), caiNaSegunda());
+
 	}
 
 }
