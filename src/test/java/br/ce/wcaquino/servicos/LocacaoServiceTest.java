@@ -217,6 +217,11 @@ public class LocacaoServiceTest {
 		
 		assertThat(retorno.getDataRetorno(), caiEm(Calendar.TUESDAY));
 		assertThat(retorno.getDataRetorno(), caiNaSegunda());
+		
+		//assertThat(retorno.getDataRetorno(), ehHoje());
+		assertThat(retorno.getDataRetorno(), ehHojeDiferencaDias(1));
+
+
 
 	}
 
