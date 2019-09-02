@@ -28,14 +28,17 @@ import br.ce.wcaquino.exceptions.LocadoraException;
  */
 @RunWith(Parameterized.class)
 public class CalcularValorLocacaoTest {
-	
+
 	private LocacaoService service;
 
 	@Parameter
 	public List<Filme> filmes;
 
-	@Parameter(value = 1)
+	@Parameter(value = 1) // Value mostra a ordem que está definida os parametros
 	public Double valorLocacao;
+
+	@Parameter(value = 2)
+	public String descricao;
 
 	// É usado o before em todos os testes
 	@Before
@@ -50,12 +53,13 @@ public class CalcularValorLocacaoTest {
 	private static Filme filme5 = new Filme("Filme 5", 1, 4.0);
 	private static Filme filme6 = new Filme("Filme 6", 1, 4.0);
 
-	@Parameters
+	@Parameters(name = "Teste {index}= {2}")
 	public static Collection<Object[]> getParametros() {
-		return Arrays.asList(new Object[][] { { Arrays.asList(filme1, filme2, filme3), 11.0 },
-				{ Arrays.asList(filme1, filme2, filme3, filme4), 13.00 },
-				{ Arrays.asList(filme1, filme2, filme3, filme4, filme5), 14.00 },
-				{ Arrays.asList(filme1, filme2, filme3, filme4, filme5, filme6), 14.00 } });
+		return Arrays.asList(new Object[][] { { Arrays.asList(filme1, filme2, filme3), 11.0, "3 Filmes 25%" },
+				{ Arrays.asList(filme1, filme2, filme3, filme4), 13.00, "4 Filmes 50%" },
+				{ Arrays.asList(filme1, filme2, filme3, filme4, filme5), 14.00, "5 Filmes 75%" },
+				{ Arrays.asList(filme1, filme2, filme3, filme4, filme5, filme6), 14.00, "6 Filmes 100%" } });
+		// pode ser colocado outra linha com outras condições para ser verificado
 	}
 
 	@Test
