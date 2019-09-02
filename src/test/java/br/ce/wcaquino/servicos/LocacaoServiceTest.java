@@ -6,14 +6,17 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
@@ -194,6 +197,23 @@ public class LocacaoServiceTest {
 
 		// verficacao
 		assertThat(resultado.getValor(), is(14.0));
+	}
+	
+	@Test
+	//@Ignore
+	public void naoDevolverFimesNoDomingo() throws FilmeSemEstoqueException, LocadoraException {
+		// ESSE TESTE VAI SER IGNORADO POR CAUSA DA ANOTAÇÃO @Ignore
+		
+		// Cenário
+		Usuario usuario= new Usuario("Usuario 1");
+		List<Filme> filmes= Arrays.asList(new Filme("Filme 1",1,4.0));
+		
+		// Ação
+		Locacao retorno= service.alugarFilme(usuario, filmes);
+		boolean ehretorno= DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
+		Assert.assertFalse(ehretorno);
+		
+		Assume.assumeFalse(DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY));
 	}
 
 }
