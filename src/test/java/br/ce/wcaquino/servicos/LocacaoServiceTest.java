@@ -215,8 +215,8 @@ public class LocacaoServiceTest {
 		
 		Assume.assumeFalse(DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY));
 		
-		assertThat(retorno.getDataRetorno(), caiEm(Calendar.TUESDAY));
-		assertThat(retorno.getDataRetorno(), caiNaSegunda());
+//		assertThat(retorno.getDataRetorno(), caiEm(Calendar.TUESDAY));
+//		assertThat(retorno.getDataRetorno(), caiNaSegunda());
 		
 		//assertThat(retorno.getDataRetorno(), ehHoje());
 		assertThat(retorno.getDataRetorno(), ehHojeDiferencaDias(1));
