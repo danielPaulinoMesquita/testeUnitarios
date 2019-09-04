@@ -1,7 +1,7 @@
 package br.ce.wcaquino.servicos;
 
+import static br.ce.wcaquino.matchers.MatchersProprios.ehHojeDiferencaDias;
 import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
-import static br.ce.wcaquino.matchers.MatchersProprios.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -30,6 +30,7 @@ import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
+import buildermaster.BuilderMaster;
 
 public class LocacaoServiceTest {
 
@@ -219,6 +220,10 @@ public class LocacaoServiceTest {
 		// assertThat(retorno.getDataRetorno(), ehHoje());
 		assertThat(retorno.getDataRetorno(), ehHojeDiferencaDias(1));
 
+	}
+	
+	public static void main(String[] args) {
+		new BuilderMaster().gerarCodigoClasse(Locacao.class);
 	}
 
 }
