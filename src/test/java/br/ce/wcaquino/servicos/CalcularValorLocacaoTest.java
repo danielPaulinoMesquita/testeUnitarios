@@ -14,6 +14,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
+import br.ce.wcaquino.builders.FilmeBuilder;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -52,6 +53,9 @@ public class CalcularValorLocacaoTest {
 	private static Filme filme4 = new Filme("Filme 4", 2, 4.0);
 	private static Filme filme5 = new Filme("Filme 5", 1, 4.0);
 	private static Filme filme6 = new Filme("Filme 6", 1, 4.0);
+	
+	//Outra forma de instânciar o Filme, mas com o FilmeBuilder(DataBuilder)
+	private static Filme outroFilme =FilmeBuilder.umFilme().agora();
 
 	@Parameters(name = "Teste {index}= {2}")
 	public static Collection<Object[]> getParametros() {

@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 
+import br.ce.wcaquino.builders.FilmeBuilder;
+import br.ce.wcaquino.builders.UsuarioBuilder;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -63,15 +65,15 @@ public class LocacaoServiceTest {
 	@Test
 	public void teste() {
 		// cenario
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 4.0), new Filme("Filme 2", 1, 4.0));
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().comValor(6.0).agora(), FilmeBuilder.umFilme().comValor(7.0).agora());
 		// acao
 		Locacao locacao;
 		try {
 			locacao = service.alugarFilme(usuario, filmes);
 			// Destaca os errors com error(O esperado dos dois parâmetros é definido no
 			// ultimo param que é is())
-			error.checkThat(locacao.getValor(), is(equalTo(8.0)));
+			error.checkThat(locacao.getValor(), is(equalTo(13.0)));
 			error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
 			error.checkThat(isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)), is(true));
 		} catch (Exception e) {
@@ -85,8 +87,8 @@ public class LocacaoServiceTest {
 	// Exception específica
 	@Test(expected = FilmeSemEstoqueException.class)
 	public void deveDarExceptionFilmeSemEstoque1() throws Exception {
-		Usuario usuario2 = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 4.0), new Filme("Filme 2", 0, 4.0));
+		Usuario usuario2 = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().semEstoque().agora(), FilmeBuilder.umFilme().semEstoque().agora());
 
 		service.alugarFilme(usuario2, filmes);
 	}
@@ -94,8 +96,8 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveDarLocadoraExceptionUsuarioVazio() throws FilmeSemEstoqueException {
 		// Cenário
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 4.0), new Filme("Filme 2", 1, 4.0));
-		Usuario usuario = new Usuario("Usuario 1");
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora(), FilmeBuilder.umFilme().agora());
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 
 		// Ação
 		try {
@@ -109,8 +111,8 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveDarExceptionFilmeSemEstoque2() throws FilmeSemEstoqueException {
 		// Cenário
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 4.0), new Filme("Filme 2", 0, 4.0));
-		Usuario usuario = new Usuario("Usuario 1");
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().semEstoque().agora(), FilmeBuilder.umFilme().semEstoque().agora());
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 
 		// Ação
 		try {
@@ -125,7 +127,7 @@ public class LocacaoServiceTest {
 	public void deveDarExceptionFilmeNull() throws FilmeSemEstoqueException, LocadoraException {
 		// Cenário
 		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 0, 4.0), new Filme("Filme 2", 0, 4.0));
-		Usuario usuario = new Usuario("Usuario 1");
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 
 		exception.expect(LocadoraException.class);
 		exception.expectMessage("Filme Vazio");
@@ -139,7 +141,7 @@ public class LocacaoServiceTest {
 	public void devePagar75pcNoFilme() throws FilmeSemEstoqueException, LocadoraException {
 
 		// Cenário
-		Usuario usuario = new Usuario("Usuario 1");
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 4.0), new Filme("Filme 2", 1, 4.0),
 				new Filme("Filme 3", 2, 4.0));
 
@@ -154,7 +156,7 @@ public class LocacaoServiceTest {
 	public void devePagar50pcNoFilme() throws FilmeSemEstoqueException, LocadoraException {
 
 		// Cenário
-		Usuario usuario = new Usuario("Usuario 1");
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 4.0), new Filme("Filme 2", 1, 4.0),
 				new Filme("Filme 3", 2, 4.0), new Filme("Filme 4", 2, 4.0));
 
@@ -169,7 +171,7 @@ public class LocacaoServiceTest {
 	public void devePagar25pcNoFilme() throws FilmeSemEstoqueException, LocadoraException {
 
 		// Cenário
-		Usuario usuario = new Usuario("Usuario 1");
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 4.0), new Filme("Filme 2", 1, 4.0),
 				new Filme("Filme 3", 2, 4.0), new Filme("Filme 4", 2, 4.0), new Filme("Filme 5", 2, 4.0));
 
@@ -184,12 +186,9 @@ public class LocacaoServiceTest {
 	public void devePagar100pcNoFilme() throws FilmeSemEstoqueException, LocadoraException {
 
 		// Cenário
-		Usuario usuario = new Usuario("Usuario 1");
-		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 4.0), 
-				new Filme("Filme 2", 1, 4.0),
-				new Filme("Filme 3", 2, 4.0),
-				new Filme("Filme 4", 2, 4.0),
-				new Filme("Filme 5", 2, 4.0),
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 2, 4.0), new Filme("Filme 2", 1, 4.0),
+				new Filme("Filme 3", 2, 4.0), new Filme("Filme 4", 2, 4.0), new Filme("Filme 5", 2, 4.0),
 				new Filme("Filme 6", 2, 4.0));
 
 		// Ação
@@ -198,30 +197,27 @@ public class LocacaoServiceTest {
 		// verficacao
 		assertThat(resultado.getValor(), is(14.0));
 	}
-	
+
 	@Test
-	//@Ignore
+	// @Ignore
 	public void naoDevolverFimesNoDomingo() throws FilmeSemEstoqueException, LocadoraException {
 		// ESSE TESTE VAI SER IGNORADO POR CAUSA DA ANOTAÇÃO @Ignore
-		
+
 		// Cenário
-		Usuario usuario= new Usuario("Usuario 1");
-		List<Filme> filmes= Arrays.asList(new Filme("Filme 1",1,4.0));
-		
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 4.0));
+
 		// Ação
-		Locacao retorno= service.alugarFilme(usuario, filmes);
-		boolean ehretorno= DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
+		Locacao retorno = service.alugarFilme(usuario, filmes);
+		boolean ehretorno = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
 		Assert.assertFalse(ehretorno);
-		
+
 		Assume.assumeFalse(DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY));
-		
+
 //		assertThat(retorno.getDataRetorno(), caiEm(Calendar.TUESDAY));
 //		assertThat(retorno.getDataRetorno(), caiNaSegunda());
-		
-		//assertThat(retorno.getDataRetorno(), ehHoje());
+		// assertThat(retorno.getDataRetorno(), ehHoje());
 		assertThat(retorno.getDataRetorno(), ehHojeDiferencaDias(1));
-
-
 
 	}
 
