@@ -39,9 +39,9 @@ public class LocacaoServiceTest {
 	private LocacaoService service;
 
 	private SPCService spc;
-	
+
 	private LocacaoDAO dao;
-	
+
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
 
@@ -237,10 +237,12 @@ public class LocacaoServiceTest {
 	public void naoDeveAlugarFilmeParaNegativadoSPC() throws FilmeSemEstoqueException, LocadoraException {
 		// Cenário
 		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		Usuario usuario2 = UsuarioBuilder.umUsuario().comNome("User 2").agora();
+
 		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
 
 		Mockito.when(spc.possuiNegativacao(usuario)).thenReturn(true);
-		
+
 		exception.expect(LocadoraException.class);
 		exception.expectMessage("Usuário Negativado");
 
