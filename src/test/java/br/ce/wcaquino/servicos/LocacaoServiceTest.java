@@ -36,10 +36,12 @@ import buildermaster.BuilderMaster;
 
 public class LocacaoServiceTest {
 
-	LocacaoService service;
+	private LocacaoService service;
 
-	static int i;
-
+	private SPCService spc;
+	
+	private LocacaoDAO dao;
+	
 	@Rule
 	public ErrorCollector error = new ErrorCollector();
 
@@ -50,8 +52,10 @@ public class LocacaoServiceTest {
 	@Before
 	public void setup() {
 		service = new LocacaoService();
-		LocacaoDAO dao= Mockito.mock(LocacaoDAO.class);
+		dao = Mockito.mock(LocacaoDAO.class);
 		service.setLocacaoDAO(dao);
+		spc = Mockito.mock(SPCService.class);
+		service.setSPCService(spc);
 	}
 
 	@After
@@ -71,7 +75,8 @@ public class LocacaoServiceTest {
 	public void teste() {
 		// cenario
 		Usuario usuario = UsuarioBuilder.umUsuario().agora();
-		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().comValor(6.0).agora(), FilmeBuilder.umFilme().comValor(7.0).agora());
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().comValor(6.0).agora(),
+				FilmeBuilder.umFilme().comValor(7.0).agora());
 		// acao
 		Locacao locacao;
 		try {
@@ -93,7 +98,8 @@ public class LocacaoServiceTest {
 	@Test(expected = FilmeSemEstoqueException.class)
 	public void deveDarExceptionFilmeSemEstoque1() throws Exception {
 		Usuario usuario2 = UsuarioBuilder.umUsuario().agora();
-		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().semEstoque().agora(), FilmeBuilder.umFilme().semEstoque().agora());
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().semEstoque().agora(),
+				FilmeBuilder.umFilme().semEstoque().agora());
 
 		service.alugarFilme(usuario2, filmes);
 	}
@@ -116,7 +122,8 @@ public class LocacaoServiceTest {
 	@Test
 	public void deveDarExceptionFilmeSemEstoque2() throws FilmeSemEstoqueException {
 		// Cenário
-		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().semEstoque().agora(), FilmeBuilder.umFilme().semEstoque().agora());
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().semEstoque().agora(),
+				FilmeBuilder.umFilme().semEstoque().agora());
 		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 
 		// Ação
@@ -225,9 +232,19 @@ public class LocacaoServiceTest {
 		assertThat(retorno.getDataRetorno(), ehHojeDiferencaDias(1));
 
 	}
-	
-	public static void main(String[] args) {
-		new BuilderMaster().gerarCodigoClasse(Locacao.class);
-	}
 
+	@Test
+	public void naoDeveAlugarFilmeParaNegativadoSPC() throws FilmeSemEstoqueException, LocadoraException {
+		// Cenário
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
+
+		Mockito.when(spc.possuiNegativacao(usuario)).thenReturn(true);
+		
+		exception.expect(LocadoraException.class);
+		exception.expectMessage("Usuário Negativado");
+
+		// Ação
+		service.alugarFilme(usuario, filmes);
+	}
 }
