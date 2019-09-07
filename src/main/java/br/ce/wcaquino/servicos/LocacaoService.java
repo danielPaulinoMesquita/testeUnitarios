@@ -13,6 +13,7 @@ import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.utils.DataUtils;
+
 /*
  * VERIFICADO A ANÁLISE DE COBERTURA
  * 
@@ -22,7 +23,7 @@ public class LocacaoService {
 	private LocacaoDAO dao;
 	private SPCService spcService;
 	private EmailService emailService;
-	
+
 	public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws FilmeSemEstoqueException, LocadoraException {
 		if (filmes == null || filmes.isEmpty()) {
 			throw new LocadoraException("Filme Vazio");
@@ -37,8 +38,8 @@ public class LocacaoService {
 		if (usuario == null) {
 			throw new LocadoraException("Usuário Vazio");
 		}
-		
-		if(spcService.possuiNegativacao(usuario)) {
+
+		if (spcService.possuiNegativacao(usuario)) {
 			throw new LocadoraException("Usuário Negativado");
 		}
 
@@ -69,43 +70,44 @@ public class LocacaoService {
 				valorFilme = 0d;
 				break;
 			}
-			
+
 			valorTotal += valorFilme;
 		}
-		
+
 		locacao.setValor(valorTotal);
 
 		// Entrega no dia seguinte
 		Date dataEntrega = new Date();
 		dataEntrega = adicionarDias(dataEntrega, 1);
-		if(DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY))
+		if (DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY))
 			dataEntrega = adicionarDias(dataEntrega, 1);
 
 		locacao.setDataRetorno(dataEntrega);
 
 		// Salvando a locacao...
 		dao.salvar(locacao);
-		
+
 		return locacao;
 	}
-	
+
 	public void notificarAtrasos() {
-		List<Locacao> locacoes= dao.obterLocacoesPendentes();
-		for(Locacao locacao:locacoes) {
-			emailService.notificarAtraso(locacao.getUsuario());
+		List<Locacao> locacoes = dao.obterLocacoesPendentes();
+		for (Locacao locacao : locacoes) {
+			if (locacao.getDataRetorno().before(new Date()))
+				emailService.notificarAtraso(locacao.getUsuario());
 		}
 	}
-	
+
 	public void setLocacaoDAO(LocacaoDAO dao) {
-		this.dao=dao;
+		this.dao = dao;
 	}
-	
+
 	public void setSPCService(SPCService spc) {
-		this.spcService=spc;
+		this.spcService = spc;
 	}
-	
+
 	public void setEmailService(EmailService email) {
-		this.emailService=email;
+		this.emailService = email;
 	}
 
 }

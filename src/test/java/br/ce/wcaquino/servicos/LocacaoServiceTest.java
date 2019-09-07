@@ -43,7 +43,7 @@ public class LocacaoServiceTest {
 	private SPCService spc;
 
 	private LocacaoDAO dao;
-	
+
 	private EmailService email;
 
 	@Rule
@@ -60,7 +60,7 @@ public class LocacaoServiceTest {
 		service.setLocacaoDAO(dao);
 		spc = Mockito.mock(SPCService.class);
 		service.setSPCService(spc);
-		email=Mockito.mock(EmailService.class);
+		email = Mockito.mock(EmailService.class);
 		service.setEmailService(email);
 	}
 
@@ -91,7 +91,8 @@ public class LocacaoServiceTest {
 			// ultimo param que é is())
 			error.checkThat(locacao.getValor(), is(equalTo(13.0)));
 			error.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
-			error.checkThat(isMesmaData(locacao.getDataRetorno(), DataUtils.obterDataComDiferencaDias(1)), is(true));
+			// error.checkThat(isMesmaData(locacao.getDataRetorno(),
+			// DataUtils.obterDataComDiferencaDias(1)), is(true));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -235,13 +236,12 @@ public class LocacaoServiceTest {
 //		assertThat(retorno.getDataRetorno(), caiEm(Calendar.TUESDAY));
 //		assertThat(retorno.getDataRetorno(), caiNaSegunda());
 		// assertThat(retorno.getDataRetorno(), ehHoje());
-		assertThat(retorno.getDataRetorno(), ehHojeDiferencaDias(1));
-		
-		
+		// assertThat(retorno.getDataRetorno(), ehHojeDiferencaDias(1));
+
 	}
 
 	@Test
-	public void naoDeveAlugarFilmeParaNegativadoSPC() throws FilmeSemEstoqueException{
+	public void naoDeveAlugarFilmeParaNegativadoSPC() throws FilmeSemEstoqueException {
 		// Cenário
 		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		Usuario usuario2 = UsuarioBuilder.umUsuario().comNome("User 2").agora();
@@ -249,6 +249,7 @@ public class LocacaoServiceTest {
 		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
 
 		Mockito.when(spc.possuiNegativacao(usuario)).thenReturn(true);
+		// Mockito.when(spc.possuiNegativacao(Mockito.any(Usuario.class))).thenReturn(true);
 
 //		exception.expect(LocadoraException.class);
 //		exception.expectMessage("Usuário Negativado");
@@ -256,46 +257,49 @@ public class LocacaoServiceTest {
 		// Ação
 		try {
 			service.alugarFilme(usuario, filmes);
-			
+
 			Assert.fail();
 		} catch (LocadoraException e) {
 			Assert.assertThat(e.getMessage(), is("Usuário Negativado"));
 		}
-		
-		//Verificacao
-				Mockito.verify(spc).possuiNegativacao(usuario);
+
+		// Verificacao
+		Mockito.verify(spc).possuiNegativacao(usuario);
 	}
-	
+
 	@Test
 	public void deveEnviarEmailParaLocacaoesAtrasados() {
-		//cenário 
-		
-		Usuario usuario= UsuarioBuilder.umUsuario().agora();
-		Usuario usuario2= UsuarioBuilder.umUsuario().comNome("Usuario 2").agora();
+		// cenário
 
-		
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		Usuario usuario2 = UsuarioBuilder.umUsuario().comNome("Usuario 2").agora();
+
 		// Aqui seria a simulação do resultado de um resultSet do repository ou dao
-		List<Locacao> locacoes= 
-				Arrays.asList(
-						LocacaoBuilder
-						.umLocacao()
-							.comUsuario(usuario)
-							.comDataRetorno(DataUtils.obterDataComDiferencaDias(-2))
-						.agora());
-		
-		// Aqui indicamos quen o resultSet de uma pseudo consulta no banco de dados é o locacoes criado anteriormente
-		// Usamos mockito para implementar essa simulação de resultado do repository ou DAO
-		Mockito.when(dao.obterLocacoesPendentes()).thenReturn(locacoes);
-		
-		//acao
-		service.notificarAtrasos();
-		
-		
-		//verificar atrasos(Aqui será verificado se de fato o service chamou o notificarAtraso do emailService)
-		Mockito.verify(email).notificarAtraso(usuario);
-		Mockito.verify(email, times(0)).notificarAtraso(usuario2);
-		//Mockito.verifyZeroInteractions(email);
+		List<Locacao> locacoes = Arrays.asList(LocacaoBuilder.umLocacao().atrasado().comUsuario(usuario).agora(),
+				LocacaoBuilder.umLocacao().comUsuario(usuario2).agora());
 
-		
+		// Aqui indicamos quen o resultSet de uma pseudo consulta no banco de dados é o
+		// locacoes criado anteriormente
+		// Usamos mockito para implementar essa simulação de resultado do repository ou
+		// DAO
+		Mockito.when(dao.obterLocacoesPendentes()).thenReturn(locacoes);
+
+		// acao
+		service.notificarAtrasos();
+
+		// verificar atrasos(Aqui será verificado se de fato o service chamou o
+		// notificarAtraso do emailService)
+		Mockito.verify(email).notificarAtraso(usuario);
+		Mockito.verify(email, times(1)).notificarAtraso(Mockito.any(Usuario.class));// no minimo uma vez do tipo usuário
+		Mockito.verify(email, Mockito.atLeastOnce()).notificarAtraso(usuario);// pelo menos uma vez
+		Mockito.verify(email, Mockito.atLeast(1)).notificarAtraso(usuario);// no minimo uma vez
+		Mockito.verify(email, times(0)).notificarAtraso(usuario2);
+
+		Mockito.verify(email, Mockito.never()).notificarAtraso(usuario2);// Outra forma de verificar e constatar que não
+																			// houve invocações
+		Mockito.verifyNoMoreInteractions(email);
+		// Mockito.verifyZeroInteractions(spc);
+		// Mockito.verifyZeroInteractions(email);
+
 	}
 }
