@@ -13,6 +13,10 @@ public class Calculadora {
 		// TODO Auto-generated method stub
 		return i - j;
 	}
+	
+	public void imprime() {
+		System.out.println("Passei aqui");
+	}
 
 	public int dividir(int i, int j) throws NaoPodeDividirPorZeroException {
 		if (j == 0) {
