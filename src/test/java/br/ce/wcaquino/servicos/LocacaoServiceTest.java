@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -35,6 +36,7 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
+import br.ce.wcaquino.matchers.MatchersProprios;
 import br.ce.wcaquino.utils.DataUtils;
 
 public class LocacaoServiceTest {
@@ -318,6 +320,26 @@ public class LocacaoServiceTest {
 		service.alugarFilme(usuario, filmes);
 		
 		
+	}
+	
+	@Test
+	public void deveProrrogarUmaLocacao() {
+		// Cenário
+		Locacao locacao= LocacaoBuilder.umLocacao().agora();
+		
+		// Ação
+		service.prorrogarLocacao(locacao, 3);
+		
+		// Verificação
+		ArgumentCaptor<Locacao> argCapt = ArgumentCaptor.forClass(Locacao.class);
+		Mockito.verify(dao).salvar(argCapt.capture());
+		Locacao locacaoRetorno = argCapt.getValue();
+		
+		
+		assertThat(locacaoRetorno.getValor(), is(30.0));
+		assertThat(locacaoRetorno.getDataLocacao(), MatchersProprios.ehHoje());
+		assertThat(locacaoRetorno.getDataRetorno(), MatchersProprios.ehHojeDiferencaDias(3));
+
 	}
 	
 	

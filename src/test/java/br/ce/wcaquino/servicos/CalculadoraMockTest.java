@@ -1,9 +1,17 @@
 package br.ce.wcaquino.servicos;
 
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 
 public class CalculadoraMockTest {
+	
+	@Mock
+	private Calculadora calcMock;
+	
+//	@Spy
+//	private Calculadora calcSpy;
 
 	@Test
 	public void teste() {
