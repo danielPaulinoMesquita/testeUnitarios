@@ -56,6 +56,26 @@ public class LocacaoService {
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(Calendar.getInstance().getTime());
 
+		Double valorTotal = calcularVaorTotal(filmes);
+
+		locacao.setValor(valorTotal);
+
+		// Entrega no dia seguinte
+		Date dataEntrega = Calendar.getInstance().getTime();
+		dataEntrega = adicionarDias(dataEntrega, 1);
+		if (DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY))
+			dataEntrega = adicionarDias(dataEntrega, 1);
+
+		locacao.setDataRetorno(dataEntrega);
+
+		// Salvando a locacao...
+		dao.salvar(locacao);
+
+		return locacao;
+	}
+
+	private Double calcularVaorTotal(List<Filme> filmes) {
+		System.out.println("Calculando no met");
 		Double valorTotal = 0.0;
 		for (int i = 0; i < filmes.size(); i++) {
 			Filme filme = filmes.get(i);
@@ -81,21 +101,7 @@ public class LocacaoService {
 
 			valorTotal += valorFilme;
 		}
-
-		locacao.setValor(valorTotal);
-
-		// Entrega no dia seguinte
-		Date dataEntrega = Calendar.getInstance().getTime();
-		dataEntrega = adicionarDias(dataEntrega, 1);
-		if (DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY))
-			dataEntrega = adicionarDias(dataEntrega, 1);
-
-		locacao.setDataRetorno(dataEntrega);
-
-		// Salvando a locacao...
-		dao.salvar(locacao);
-
-		return locacao;
+		return valorTotal;
 	}
 
 	public void notificarAtrasos() {

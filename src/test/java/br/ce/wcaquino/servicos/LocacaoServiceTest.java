@@ -72,7 +72,8 @@ public class LocacaoServiceTest {
 	// É usado o before em todos os testes
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);	
+		MockitoAnnotations.initMocks(this);
+		service = PowerMockito.spy(service);
 	}
 
 	@After
@@ -236,37 +237,32 @@ public class LocacaoServiceTest {
 		// Cenário
 		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 4.0));
-		
-		
-		//usando power mock para Date()
-		//o Date configurado só vai modificar as datas do locacao service
+
+		// usando power mock para Date()
+		// o Date configurado só vai modificar as datas do locacao service
 //		PowerMockito.whenNew(Date.class).withNoArguments()
 //		.thenReturn(DataUtils.obterData(15, 9, 2019));
-		
-		
-		Calendar calendar= Calendar.getInstance();
+
+		Calendar calendar = Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, 15);
 		calendar.set(Calendar.MONTH, Calendar.SEPTEMBER);
 		calendar.set(Calendar.YEAR, 2019);
 
 		PowerMockito.mockStatic(Calendar.class);
 		PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
-		//PowerMockito.when(Calendar.getInstance().getTime()).thenReturn();
-		
+		// PowerMockito.when(Calendar.getInstance().getTime()).thenReturn();
+
 		// Ação
 		Locacao retorno = service.alugarFilme(usuario, filmes);
-		
-		
-		//Verificação
+
+		// Verificação
 		assertThat(retorno.getDataRetorno(), MatchersProprios.caiNaSegunda());
-		//PowerMockito.verifyNew(Date.class, times(2)).withNoArguments();
-		
-		
-		//Verificar testes estáticos
+		// PowerMockito.verifyNew(Date.class, times(2)).withNoArguments();
+
+		// Verificar testes estáticos
 		PowerMockito.verifyStatic(times(2));
 		Calendar.getInstance();
 
-		
 //		boolean ehretorno = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
 //		Assert.assertFalse(ehretorno);
 //
@@ -335,50 +331,64 @@ public class LocacaoServiceTest {
 		Mockito.verify(email, times(0)).notificarAtraso(usuario2);
 
 		Mockito.verify(email, Mockito.never()).notificarAtraso(usuario2);// Outra forma de verificar e constatar que não
-																		// houve invocações
+																			// houve invocações
 		Mockito.verifyNoMoreInteractions(email);
 		// Mockito.verifyZeroInteractions(spc);
 		// Mockito.verifyZeroInteractions(email);
 
 	}
-	
+
 	@Test
 	public void deveTratarErronoSPC() throws Exception {
 		// Cenário
-		Usuario usuario= UsuarioBuilder.umUsuario().agora();
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
-		
-		Mockito.when(spc.possuiNegativacao(usuario)).thenThrow(new LocadoraException("Problemas com o SPC, tente novamente"));
-	
+
+		Mockito.when(spc.possuiNegativacao(usuario))
+				.thenThrow(new LocadoraException("Problemas com o SPC, tente novamente"));
+
 		// verificação
 		exception.expect(LocadoraException.class);
 		exception.expectMessage("Problemas com o SPC, tente novamente");
-		
+
 		// ação
 		service.alugarFilme(usuario, filmes);
-		
-		
+
 	}
-	
+
 	@Test
 	public void deveProrrogarUmaLocacao() {
 		// Cenário
-		Locacao locacao= LocacaoBuilder.umLocacao().agora();
-		
+		Locacao locacao = LocacaoBuilder.umLocacao().agora();
+
 		// Ação
 		service.prorrogarLocacao(locacao, 3);
-		
+
 		// Verificação
 		ArgumentCaptor<Locacao> argCapt = ArgumentCaptor.forClass(Locacao.class);
 		Mockito.verify(dao).salvar(argCapt.capture());
 		Locacao locacaoRetorno = argCapt.getValue();
-		
-		
+
 		assertThat(locacaoRetorno.getValor(), is(30.0));
 		assertThat(locacaoRetorno.getDataLocacao(), MatchersProprios.ehHoje());
 		assertThat(locacaoRetorno.getDataRetorno(), MatchersProprios.ehHojeDiferencaDias(3));
 
 	}
-	
-	
+
+	@Test
+	public void deveCalcularFilme_SemCalcularValor() throws Exception {
+		// Cenário
+		Usuario usuario = UsuarioBuilder.umUsuario().agora();
+		List<Filme> filmes = Arrays.asList(FilmeBuilder.umFilme().agora());
+		PowerMockito.doReturn(1.0).when(service, "calcularVaorTotal", filmes);
+
+		// ação
+		Locacao locacao = service.alugarFilme(usuario, filmes);
+
+		// Verificação
+		Assert.assertThat(locacao.getValor(), is(1.0));
+		PowerMockito.verifyPrivate(service).invoke("calcularVaorTotal", filmes);
+
+	}
+
 }
