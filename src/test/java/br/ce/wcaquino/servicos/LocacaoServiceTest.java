@@ -41,6 +41,7 @@ import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.matchers.MatchersProprios;
 import br.ce.wcaquino.utils.DataUtils;
+
 /*
  * o PowerMockito configurado só vai modificar as classes/funcoes e metodos 
  * das classes dentro do Prepare for test 
@@ -242,6 +243,7 @@ public class LocacaoServiceTest {
 //		PowerMockito.whenNew(Date.class).withNoArguments()
 //		.thenReturn(DataUtils.obterData(15, 9, 2019));
 		
+		
 		Calendar calendar= Calendar.getInstance();
 		calendar.set(Calendar.DAY_OF_MONTH, 15);
 		calendar.set(Calendar.MONTH, Calendar.SEPTEMBER);
@@ -258,6 +260,7 @@ public class LocacaoServiceTest {
 		//Verificação
 		assertThat(retorno.getDataRetorno(), MatchersProprios.caiNaSegunda());
 		//PowerMockito.verifyNew(Date.class, times(2)).withNoArguments();
+		
 		
 		//Verificar testes estáticos
 		PowerMockito.verifyStatic(times(2));
