@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -42,10 +43,11 @@ import br.ce.wcaquino.matchers.MatchersProprios;
 import br.ce.wcaquino.utils.DataUtils;
 /*
  * o PowerMockito configurado só vai modificar as classes/funcoes e metodos 
- * das classes dentro do Prepare for test
+ * das classes dentro do Prepare for test 
+ * ex: @PrepareForTest({LocacaoService.class,DataUtils.class})
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({LocacaoService.class,DataUtils.class})
+@PrepareForTest(LocacaoService.class)
 public class LocacaoServiceTest {
 
 	@InjectMocks
@@ -235,18 +237,31 @@ public class LocacaoServiceTest {
 		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 4.0));
 		
 		
-		//usando power mock
+		//usando power mock para Date()
 		//o Date configurado só vai modificar as datas do locacao service
-		PowerMockito.whenNew(Date.class).withNoArguments()
-		.thenReturn(DataUtils.obterData(15, 9, 2019));
+//		PowerMockito.whenNew(Date.class).withNoArguments()
+//		.thenReturn(DataUtils.obterData(15, 9, 2019));
+		
+		Calendar calendar= Calendar.getInstance();
+		calendar.set(Calendar.DAY_OF_MONTH, 15);
+		calendar.set(Calendar.MONTH, Calendar.SEPTEMBER);
+		calendar.set(Calendar.YEAR, 2019);
 
+		PowerMockito.mockStatic(Calendar.class);
+		PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
+		//PowerMockito.when(Calendar.getInstance().getTime()).thenReturn();
+		
 		// Ação
 		Locacao retorno = service.alugarFilme(usuario, filmes);
 		
 		
 		//Verificação
 		assertThat(retorno.getDataRetorno(), MatchersProprios.caiNaSegunda());
-		PowerMockito.verifyNew(Date.class, times(2)).withNoArguments();
+		//PowerMockito.verifyNew(Date.class, times(2)).withNoArguments();
+		
+		//Verificar testes estáticos
+		PowerMockito.verifyStatic(times(2));
+		Calendar.getInstance();
 
 		
 //		boolean ehretorno = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
