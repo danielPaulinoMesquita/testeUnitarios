@@ -7,25 +7,27 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import br.ce.wcaquino.builders.FilmeBuilder;
 import br.ce.wcaquino.builders.LocacaoBuilder;
@@ -38,7 +40,12 @@ import br.ce.wcaquino.exceptions.FilmeSemEstoqueException;
 import br.ce.wcaquino.exceptions.LocadoraException;
 import br.ce.wcaquino.matchers.MatchersProprios;
 import br.ce.wcaquino.utils.DataUtils;
-
+/*
+ * o PowerMockito configurado só vai modificar as classes/funcoes e metodos 
+ * das classes dentro do Prepare for test
+ */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({LocacaoService.class,DataUtils.class})
 public class LocacaoServiceTest {
 
 	@InjectMocks
@@ -220,19 +227,32 @@ public class LocacaoServiceTest {
 
 	@Test
 	// @Ignore
-	public void naoDevolverFimesNoDomingo() throws FilmeSemEstoqueException, LocadoraException {
+	public void naoDevolverFimesNoDomingo() throws Exception {
 		// ESSE TESTE VAI SER IGNORADO POR CAUSA DA ANOTAÇÃO @Ignore
 
 		// Cenário
 		Usuario usuario = UsuarioBuilder.umUsuario().agora();
 		List<Filme> filmes = Arrays.asList(new Filme("Filme 1", 1, 4.0));
+		
+		
+		//usando power mock
+		//o Date configurado só vai modificar as datas do locacao service
+		PowerMockito.whenNew(Date.class).withNoArguments()
+		.thenReturn(DataUtils.obterData(15, 9, 2019));
 
 		// Ação
 		Locacao retorno = service.alugarFilme(usuario, filmes);
-		boolean ehretorno = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
-		Assert.assertFalse(ehretorno);
+		
+		
+		//Verificação
+		assertThat(retorno.getDataRetorno(), MatchersProprios.caiNaSegunda());
+		PowerMockito.verifyNew(Date.class, times(2)).withNoArguments();
 
-		Assume.assumeFalse(DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY));
+		
+//		boolean ehretorno = DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY);
+//		Assert.assertFalse(ehretorno);
+//
+//		Assume.assumeFalse(DataUtils.verificarDiaSemana(retorno.getDataRetorno(), Calendar.SUNDAY));
 
 //		assertThat(retorno.getDataRetorno(), caiEm(Calendar.TUESDAY));
 //		assertThat(retorno.getDataRetorno(), caiNaSegunda());
