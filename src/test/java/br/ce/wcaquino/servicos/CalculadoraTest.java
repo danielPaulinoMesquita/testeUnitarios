@@ -1,18 +1,30 @@
 package br.ce.wcaquino.servicos;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
 import br.ce.wcaquino.exceptions.NaoPodeDividirPorZeroException;
 
 public class CalculadoraTest {
+
+	public static StringBuffer ordem= new StringBuffer();
 	
 	private Calculadora calculadora;
 	
 	@Before
 	public void setup() {
 		calculadora = new Calculadora();
+		System.out.println("Iniciando ..");
+		ordem.append("1");
+	}
+
+	@After
+	public void tearDown(){
+		System.out.println("Finalizando ..");
+	}
+
+	@AfterClass
+	public static void tearDownClass(){
+		System.out.println(ordem);
 	}
 
 	@Test

@@ -74,10 +74,13 @@ public class LocacaoServiceTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		service = PowerMockito.spy(service);
+		CalculadoraTest.ordem.append("2");
 	}
 
 	@After
 	public void tearDown() {
+		System.out.println("Finalizando 2..");
+
 	}
 
 	@BeforeClass
@@ -86,7 +89,7 @@ public class LocacaoServiceTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-
+		System.out.println(CalculadoraTest.ordem.toString());
 	}
 
 	@Test

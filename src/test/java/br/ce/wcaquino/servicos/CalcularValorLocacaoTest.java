@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +59,18 @@ public class CalcularValorLocacaoTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		System.out.println("Iniciando 3 ...");
+		CalculadoraTest.ordem.append("3");
+	}
+
+	@After
+	public void tearDown(){
+		System.out.println("Finalizando 3..");
+	}
+
+	@AfterClass
+	public static void tearDownClass(){
+		System.out.println(CalculadoraTest.ordem.toString());
 	}
 
 	private static Filme filme1 = new Filme("Filme 1", 2, 4.0);
@@ -65,7 +79,7 @@ public class CalcularValorLocacaoTest {
 	private static Filme filme4 = new Filme("Filme 4", 2, 4.0);
 	private static Filme filme5 = new Filme("Filme 5", 1, 4.0);
 	private static Filme filme6 = new Filme("Filme 6", 1, 4.0);
-	
+
 	//Outra forma de instânciar o Filme, mas com o FilmeBuilder(DataBuilder)
 	private static Filme outroFilme =FilmeBuilder.umFilme().agora();
 
